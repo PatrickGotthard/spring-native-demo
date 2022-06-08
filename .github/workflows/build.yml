@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+name: Build
+
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout sourcecode
+        uses: actions/checkout@v3.0.2
+
+      - name: Setup GraalVM
+        uses: graalvm/setup-graalvm@v1
+        with:
+          version: 22.1.0
+          java-version: 17
+          components: native-image
+
+      - name: Build
+        run: |
+          ./mvnw -B -ntp -Pnative verify 
+          ./mvnw -B -ntp spring-boot:build-image
